@@ -1,8 +1,7 @@
-package main
+package stack
 
 import (
 	"fmt"
-	"math/rand"
 )
 
 // Stack is ... description
@@ -64,17 +63,4 @@ func (s *Stack) avg() float64 {
 func (s *Stack) print() {
 	fmt.Printf("min: %d, max: %d, sum: %d, count: %d, avg: %.2f\n", *s.min[len(s.min)-1], *s.max[len(s.max)-1],
 		s.sum, s.count, s.avg())
-}
-
-func main() {
-	s := NewStack()
-	for i := 0; i < 10; i++ {
-		k := rand.Intn(16384)
-		if i%7 == 0 {
-			s.push(-k)
-		} else {
-			s.push(k)
-		}
-	}
-	s.print()
 }
