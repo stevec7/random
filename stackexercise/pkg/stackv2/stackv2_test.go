@@ -22,5 +22,13 @@ func TestStack(t *testing.T) {
 	n.Print()
 	fmt.Printf("NewStack: \n")
 	s.Print()
+	n, _ = s.Pop()
+	n, _ = s.Pop()
+	n, err := s.Pop()
+	if err != nil {
+		fmt.Printf("error: %v\n", err)
+	}
+	fmt.Printf("NewStack: \n")
+	s.Print()
 
 }

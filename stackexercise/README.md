@@ -10,3 +10,5 @@ should be able to get the following attributes:
 * min value in stack
 * max value in the stack
 * average value of anything on the stack
+
+There's 2 versions under the pkg dir. 

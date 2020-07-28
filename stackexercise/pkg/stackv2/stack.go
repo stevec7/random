@@ -1,6 +1,9 @@
 package stackv2
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+)
 
 type Stack struct {
 	top    *Node
@@ -28,6 +31,13 @@ func NewNode(d int) *Node {
 	}
 }
 
+func (s *Stack) Empty() bool {
+	if s.Size() < 1 {
+		return true
+	}
+	return false
+}
+
 func (s *Stack) Size() int {
 	return s.length
 }
@@ -40,7 +50,7 @@ func (s *Stack) Push(n *Node) {
 
 func (s *Stack) Pop() (*Node, error) {
 	if s.Size() < 1 {
-		return &Node{}, fmt.Errorf("stack empty")
+		return &Node{}, errors.New("stack empty")
 	}
 	n := s.top
 	s.top = n.next
@@ -49,6 +59,9 @@ func (s *Stack) Pop() (*Node, error) {
 }
 
 func (s *Stack) Print() {
+	if s.Empty() {
+		return
+	}
 	n := s.top
 	n.Print()
 	newnode := n.next
