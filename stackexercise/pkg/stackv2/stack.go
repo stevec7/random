@@ -5,9 +5,19 @@ import (
 	"fmt"
 )
 
+// MinMax min and max need to be computed in constant time, so
+//	we need to keep a list of pointers to the previous val
+type MinMax struct {
+	node *Node
+	next *Node
+}
+
 type Stack struct {
 	top    *Node
 	length int
+	min    *MinMax
+	max    *MinMax
+	sum    int
 }
 
 func NewStack() *Stack {
@@ -31,11 +41,29 @@ func NewNode(d int) *Node {
 	}
 }
 
+func (s *Stack) Avg() float64 {
+	return float64(s.sum) / float64(s.length)
+}
+
 func (s *Stack) Empty() bool {
 	if s.Size() < 1 {
 		return true
 	}
 	return false
+}
+
+func (s *Stack) Max() (*Node, error) {
+	if s.max == nil {
+		return &Node{}, errors.New("stack empty")
+	}
+	return s.max.node, nil
+}
+
+func (s *Stack) Min() (*Node, error) {
+	if s.min == nil {
+		return &Node{}, errors.New("stack empty")
+	}
+	return s.min.node, nil
 }
 
 func (s *Stack) Size() int {
@@ -45,7 +73,35 @@ func (s *Stack) Size() int {
 func (s *Stack) Push(n *Node) {
 	n.next = s.top
 	s.top = n
+	s.sum += n.data
 	s.length++
+
+	// figure out min/max
+	if s.min == nil {
+		s.min = &MinMax{
+			node: n,
+			next: nil,
+		}
+	}
+	if n.data <= s.min.node.data {
+		s.min = &MinMax{
+			node: n,
+			next: s.min.node,
+		}
+	}
+	if s.max == nil {
+		s.max = &MinMax{
+			node: n,
+			next: nil,
+		}
+	} else {
+		if n.data >= s.max.node.data {
+			s.max = &MinMax{
+				node: n,
+				next: s.max.node,
+			}
+		}
+	}
 }
 
 func (s *Stack) Pop() (*Node, error) {
@@ -55,11 +111,31 @@ func (s *Stack) Pop() (*Node, error) {
 	n := s.top
 	s.top = n.next
 	s.length--
+	s.sum = s.sum - n.data
+
+	// now figure out if we need to remove from min/max
+	if s.length == 1 {
+		s.min = nil
+		s.max = nil
+	} else {
+		if n.data <= s.min.node.data {
+			s.min = &MinMax{
+				node: s.min.next,
+				next: s.min.next.next,
+			}
+		} else if n.data >= s.max.node.data {
+			s.max = &MinMax{
+				node: s.max.next,
+				next: s.max.next.next,
+			}
+		}
+	}
 	return n, nil
 }
 
 func (s *Stack) Print() {
 	if s.Empty() {
+		fmt.Println("empty")
 		return
 	}
 	n := s.top
@@ -69,4 +145,9 @@ func (s *Stack) Print() {
 		newnode.Print()
 		newnode = newnode.next
 	}
+}
+
+func (s *Stack) Sum() int {
+	return s.sum
+
 }
