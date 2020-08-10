@@ -5,6 +5,9 @@ import (
 	"fmt"
 )
 
+// ErrStackEmpty is a custom error for an empty stack
+var ErrStackEmpty = errors.New("stack empty")
+
 // Stack is my terrible way to create a stack data structure
 type Stack struct {
 	data  []int
@@ -30,15 +33,15 @@ func (s *Stack) Avg() float64 {
 	return float64(s.sum) / float64(s.count)
 }
 
-// Length returns the length of the stack
-func (s *Stack) Length() int {
+// Size returns the length of the stack
+func (s *Stack) Size() int {
 	return s.count
 }
 
 // Max returns the minimum in the stack
 func (s *Stack) Max() (int, error) {
 	if len(s.max) < 1 {
-		return 0, errors.New("stack is empty")
+		return 0, ErrStackEmpty
 	}
 	return *s.max[len(s.max)-1], nil
 }
@@ -46,7 +49,7 @@ func (s *Stack) Max() (int, error) {
 // Min returns the minimum in the stack
 func (s *Stack) Min() (int, error) {
 	if len(s.min) < 1 {
-		return 0, errors.New("stack is empty")
+		return 0, ErrStackEmpty
 	}
 	return *s.min[len(s.min)-1], nil
 }
@@ -86,7 +89,7 @@ func (s *Stack) Push(i int) {
 func (s *Stack) Pop() (int, error) {
 	// get last element, or return an error if the stack is empty
 	if s.count == 0 {
-		return 0, errors.New("stack is empty")
+		return 0, ErrStackEmpty
 	}
 	last := (*s).data[s.count-1]
 

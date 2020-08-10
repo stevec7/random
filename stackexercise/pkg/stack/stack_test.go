@@ -1,6 +1,7 @@
 package stack
 
 import (
+    "errors"
 	"fmt"
 	"math/rand"
 	"testing"
@@ -44,7 +45,7 @@ func testExpected(s *Stack, e expected) error {
 	if m := s.Sum(); m != e.sum {
 		return fmt.Errorf("expected sum %d, got %d", e.sum, m)
 	}
-	if m := s.Length(); m != e.length {
+	if m := s.Size(); m != e.length {
 		return fmt.Errorf("expected length %d, got %d", e.length, m)
 	}
 	return nil
@@ -143,6 +144,20 @@ func TestStackPopNeg(t *testing.T) {
 func TestDrain(t *testing.T) {
 	s := createSmallStack(numsSmall)
 
+	for i := s.Size(); i >= -1; i-- {
+		_, err := s.Pop()
+		if err != nil {
+			if !errors.Is(err, ErrStackEmpty) {
+				t.Errorf("shouldve only gotten a stack empty error only")
+			}
+		}
+	}
+}
+
+/*
+func TestDrain(t *testing.T) {
+	s := createSmallStack(numsSmall)
+
 	for i := 0; i < len(numsSmall)+1; i++ {
 		_, err := s.Pop()
 		if i == len(numsSmall) {
@@ -156,6 +171,7 @@ func TestDrain(t *testing.T) {
 		}
 	}
 }
+*/
 
 func createRandomStack(n int) *Stack {
 	s1 := rand.NewSource(time.Now().UnixNano())
@@ -171,8 +187,19 @@ func BenchmarkPush(b *testing.B) {
 	_ = createRandomStack(b.N)
 }
 
-func BenchmarkPop(b *testing.B) {
-	s := createRandomStack(b.N)
+func BenchmarkPushB(b *testing.B) {
+	s := NewStack()
+	for i := 0; i < b.N; i++ {
+		s.Push(b.N)
+	}
+}
+
+func BenchmarkPush1000000(b *testing.B) {
+	_ = createRandomStack(1000000)
+}
+
+func BenchmarkPop1000000(b *testing.B) {
+	s := createRandomStack(1000000)
 	for i := 0; i < b.N; i++ {
 		_, _ = s.Pop()
 	}

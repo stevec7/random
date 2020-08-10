@@ -3,7 +3,9 @@ package stackv2
 import (
 	"errors"
 	"fmt"
+	"math/rand"
 	"testing"
+	"time"
 )
 
 var nodes = []*Node{
@@ -124,7 +126,7 @@ func TestDrain(t *testing.T) {
 		s.Push(n)
 	}
 
-	for i := s.Size(); i >= 0; i-- {
+	for i := s.Size(); i >= -2; i-- {
 		_, err := s.Pop()
 		if err != nil {
 			if !errors.Is(err, ErrStackEmpty) {
@@ -134,7 +136,7 @@ func TestDrain(t *testing.T) {
 	}
 }
 
-func TestOneRemain(t *testing.T) {
+func TestDrainLast(t *testing.T) {
 	s := NewStack()
 	for _, n := range nodesNeg {
 		s.Push(n)
@@ -158,4 +160,43 @@ func TestOneRemain(t *testing.T) {
 	if s.Size() != expectedSize {
 		t.Errorf("expected size '%d', got '%d'", expectedSize, s.Size())
 	}
+}
+
+func createRandomStack(n int) *Stack {
+	s1 := rand.NewSource(time.Now().UnixNano())
+	r1 := rand.New(s1)
+	s := NewStack()
+	var node Node
+	for i := 0; i < n; i++ {
+		node.data = r1.Intn(1024)
+		s.Push(&node)
+	}
+	return s
+}
+
+func BenchmarkPush(b *testing.B) {
+	_ = createRandomStack(b.N)
+}
+
+func BenchmarkPop(b *testing.B) {
+	s := createRandomStack(b.N)
+	for i := 0; i < b.N; i++ {
+		_, _ = s.Pop()
+	}
+
+}
+
+func BenchmarkPushB(b *testing.B) {
+	s := NewStack()
+	for i := 0; i < b.N; i++ {
+		s.Push(&Node{data: b.N})
+	}
+}
+
+func BenchmarkPop1000000(b *testing.B) {
+	s := createRandomStack(1000000)
+	for i := 0; i < b.N; i++ {
+		_, _ = s.Pop()
+	}
+
 }

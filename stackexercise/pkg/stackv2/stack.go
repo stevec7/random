@@ -85,18 +85,17 @@ func (s *Stack) Push(n *Node) {
 			node: n,
 			next: nil,
 		}
-	} else if n.data <= s.min.node.data {
-		s.min = &MinMax{
-			node: n,
-			next: s.min.node,
-		}
-	}
-	if s.max == nil {
 		s.max = &MinMax{
 			node: n,
 			next: nil,
 		}
 	} else {
+		if n.data <= s.min.node.data {
+			s.min = &MinMax{
+				node: n,
+				next: s.min.node,
+			}
+		}
 		if n.data >= s.max.node.data {
 			s.max = &MinMax{
 				node: n,
