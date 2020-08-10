@@ -5,6 +5,9 @@ import (
 	"fmt"
 )
 
+// ErrStackEmpty is a custom error if the stack is empty
+var ErrStackEmpty = errors.New("stack empty")
+
 // MinMax min and max need to be computed in constant time, so
 //	we need to keep a list of pointers to the previous val
 type MinMax struct {
@@ -54,14 +57,14 @@ func (s *Stack) Empty() bool {
 
 func (s *Stack) Max() (*Node, error) {
 	if s.max == nil {
-		return &Node{}, errors.New("stack empty")
+		return &Node{}, ErrStackEmpty
 	}
 	return s.max.node, nil
 }
 
 func (s *Stack) Min() (*Node, error) {
 	if s.min == nil {
-		return &Node{}, errors.New("stack empty")
+		return &Node{}, ErrStackEmpty
 	}
 	return s.min.node, nil
 }
@@ -82,8 +85,7 @@ func (s *Stack) Push(n *Node) {
 			node: n,
 			next: nil,
 		}
-	}
-	if n.data <= s.min.node.data {
+	} else if n.data <= s.min.node.data {
 		s.min = &MinMax{
 			node: n,
 			next: s.min.node,
@@ -106,18 +108,15 @@ func (s *Stack) Push(n *Node) {
 
 func (s *Stack) Pop() (*Node, error) {
 	if s.Size() < 1 {
-		return &Node{}, errors.New("stack empty")
+		return &Node{}, ErrStackEmpty
 	}
 	n := s.top
 	s.top = n.next
-	s.length--
 	s.sum = s.sum - n.data
+	s.length--
 
 	// now figure out if we need to remove from min/max
-	if s.length == 1 {
-		s.min = nil
-		s.max = nil
-	} else {
+	if s.length > 1 {
 		if n.data <= s.min.node.data {
 			s.min = &MinMax{
 				node: s.min.next,
@@ -129,6 +128,16 @@ func (s *Stack) Pop() (*Node, error) {
 				next: s.max.next.next,
 			}
 		}
+	} else if s.length == 1 {
+		s.min = &MinMax{
+			node: s.top,
+			next: nil,
+		}
+		s.max = &MinMax{
+			node: s.top,
+			next: nil,
+		}
+
 	}
 	return n, nil
 }
@@ -149,5 +158,4 @@ func (s *Stack) Print() {
 
 func (s *Stack) Sum() int {
 	return s.sum
-
 }
