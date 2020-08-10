@@ -1,6 +1,7 @@
 package stackv2
 
 import (
+	"errors"
 	"fmt"
 	"testing"
 )
@@ -114,5 +115,47 @@ func TestPop(t *testing.T) {
 	err = testExpected(s, e)
 	if err != nil {
 		t.Errorf("Error: %s", err)
+	}
+}
+
+func TestDrain(t *testing.T) {
+	s := NewStack()
+	for _, n := range nodesNeg {
+		s.Push(n)
+	}
+
+	for i := s.Size(); i >= 0; i-- {
+		_, err := s.Pop()
+		if err != nil {
+			if !errors.Is(err, ErrStackEmpty) {
+				t.Errorf("shouldve only gotten a stack empty error only")
+			}
+		}
+	}
+}
+
+func TestOneRemain(t *testing.T) {
+	s := NewStack()
+	for _, n := range nodesNeg {
+		s.Push(n)
+	}
+
+	expectedN := 5
+	expectedSize := 0
+
+	var n *Node
+	var err error
+	for i := s.Size() - 1; i >= 0; i-- {
+		n, err = s.Pop()
+		if err != nil {
+			t.Errorf("shouldnt have received an error")
+		}
+	}
+	if n.data != expectedN {
+		t.Errorf("expected '%d', got '%d'", expectedN, n.data)
+	}
+
+	if s.Size() != expectedSize {
+		t.Errorf("expected size '%d', got '%d'", expectedSize, s.Size())
 	}
 }
