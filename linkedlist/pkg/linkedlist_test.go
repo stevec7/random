@@ -1,8 +1,9 @@
-package linkedlistexercise
+package linkedlist
 
 import (
-	"github.com/stretchr/testify/require"
 	"testing"
+
+	"github.com/stretchr/testify/require"
 )
 
 func TestCreateList(t *testing.T) {

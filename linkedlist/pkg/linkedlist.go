@@ -1,4 +1,4 @@
-package linkedlistexercise
+package linkedlist
 
 import (
 	"fmt"
